@@ -1,7 +1,6 @@
 import java.util.ArrayList;
 
 public class EmployeeHandler {
-    import java.util.ArrayList;
 
     public class EmployeeManager {
         private ArrayList<Employee> employees;
