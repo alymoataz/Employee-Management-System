@@ -81,4 +81,9 @@ public abstract class Employee implements Serializable {
             throw new IllegalArgumentException("department cant be null");
         this.department = department;
     }
+    public static void setCount(int count){
+        if(count<0)
+            throw new IllegalArgumentException("count cant be negative");
+        Employee.count=count;
+    }
 }
