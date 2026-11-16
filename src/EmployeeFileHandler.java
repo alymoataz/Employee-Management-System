@@ -11,6 +11,10 @@ public class EmployeeFileHandler {
         fileOut.close();
     }
     public static ArrayList<Employee> loadEmployees() throws IOException,ClassNotFoundException{
+        File file=new File(FILE_NAME);
+        if(!file.exists()){
+            return new ArrayList<Employee>();
+        }
         FileInputStream fileIn=new FileInputStream(FILE_NAME);
         ObjectInputStream objectIn=new ObjectInputStream(fileIn);
         ArrayList<Employee>e=(ArrayList<Employee>) objectIn.readObject();

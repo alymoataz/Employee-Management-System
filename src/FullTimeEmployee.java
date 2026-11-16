@@ -10,6 +10,26 @@ public class FullTimeEmployee extends Employee{
         this.bonus=bonus;
     }
 
+    public double getMonthlySalary() {
+        return monthlySalary;
+    }
+
+    public double getBonus() {
+        return bonus;
+    }
+
+    public void setMonthlySalary(double monthlySalary) {
+        if(monthlySalary<=0)
+            throw new IllegalArgumentException("Salary cant be negative");
+        this.monthlySalary = monthlySalary;
+    }
+
+    public void setBonus(double bonus) {
+        if(bonus<0)
+            throw new IllegalArgumentException("bonus cant be negative");
+        this.bonus = bonus;
+    }
+
     @Override
     public double calculateSalary() {
         return monthlySalary+bonus;

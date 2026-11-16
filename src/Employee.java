@@ -49,8 +49,6 @@ public abstract class Employee implements Serializable {
     }
 
     public Department getDepartment() {
-        if(department==null)
-            throw new IllegalArgumentException("department cant be null");
         return department;
     }
 
@@ -79,6 +77,8 @@ public abstract class Employee implements Serializable {
 
 
     public void setDepartment(Department department) {
+        if(department==null)
+            throw new IllegalArgumentException("department cant be null");
         this.department = department;
     }
 }
