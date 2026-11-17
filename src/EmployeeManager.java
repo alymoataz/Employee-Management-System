@@ -38,7 +38,7 @@ public class EmployeeManager {
         EmployeeFileHandler.saveEmployees(employees);
         return true;
     }
-    public void viewemployee(){
+    public void viewEmployees(){
         if(employees.isEmpty()){
             System.out.println("no employees registered");
             return;
