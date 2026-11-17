@@ -6,6 +6,7 @@ import java.awt.event.*;
 public class LoginFrame extends JFrame {
 
     private EmployeeManager employeeManager;
+    private DepartmentManager departmentManager;
 
     private JTextField usernameField;
     private JPasswordField passwordField;
@@ -13,9 +14,11 @@ public class LoginFrame extends JFrame {
     private JButton loginButton;
     private JButton exitButton;
 
-    public LoginFrame(EmployeeManager employeeManager) {
+    public LoginFrame(EmployeeManager employeeManager,
+                      DepartmentManager departmentManager) {
 
         this.employeeManager = employeeManager;
+        this.departmentManager = departmentManager;
 
         setTitle("Employee Management System - Login");
         setSize(480, 330);
@@ -23,7 +26,6 @@ public class LoginFrame extends JFrame {
         setLocationRelativeTo(null);
         setResizable(false);
 
-        // Main panel
         JPanel mainPanel = new JPanel(new BorderLayout(15, 25));
         mainPanel.setBackground(new Color(240, 244, 249));
         mainPanel.setBorder(
@@ -125,6 +127,14 @@ public class LoginFrame extends JFrame {
                         "Login successful!"
                 );
 
+                DashboardFrame dashboard = new DashboardFrame(
+                        employeeManager,
+                        departmentManager
+                );
+
+                dashboard.setVisible(true);
+
+                dispose();
             }
             else {
 

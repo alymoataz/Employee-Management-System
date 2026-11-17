@@ -4,8 +4,10 @@ public class FullTimeEmployee extends Employee{
 
     public FullTimeEmployee(String fullName, int age, String position, Department department, double monthlySalary, double bonus) {
         super(fullName, age, position, department);
-         if(monthlySalary<=0||bonus<0)
-            throw new IllegalArgumentException("Invalid salary or bonus");
+         if(monthlySalary<=0||bonus<0) {
+             Employee.setCount(Employee.getCount()-1); //count is incremnted when super is called so decrement again bec invalid
+             throw new IllegalArgumentException("Invalid salary or bonus");
+         }
         this.monthlySalary=monthlySalary;
         this.bonus=bonus;
     }

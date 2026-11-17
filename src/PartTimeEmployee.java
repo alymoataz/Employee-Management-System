@@ -4,8 +4,10 @@ public class PartTimeEmployee extends Employee{
 
     public PartTimeEmployee(String fullName, int age, String position, Department department, double hourlyRate, int hoursWorked) {
         super(fullName, age, position, department);
-        if(hourlyRate<=0||hoursWorked<0)
-            throw new IllegalArgumentException("Hourly rate or hours worked cant be negative");
+        if(hourlyRate<=0||hoursWorked<0) {
+            Employee.setCount(Employee.getCount()-1);
+            throw new IllegalArgumentException("Hourly rate or hours worked cant be negative");//count is incremnted when super is called so decrement again bec invalid
+        }
         this.hoursWorked=hoursWorked;
         this.hourlyRate=hourlyRate;
     }
