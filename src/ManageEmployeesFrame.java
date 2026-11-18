@@ -16,7 +16,7 @@ public class ManageEmployeesFrame extends JFrame {
     private DefaultTableModel tableModel;
 
     private JTextField searchField;
-    private JComboBox<String> searchTypeBox;
+    private JComboBox<String> departmentFilterBox;
 
     private JTextField nameField;
     private JTextField ageField;
@@ -74,11 +74,16 @@ public class ManageEmployeesFrame extends JFrame {
         );
         searchPanel.setOpaque(false);
 
-        searchTypeBox = new JComboBox<>(
-                new String[]{"Employee ID", "Department"}
-        );
-
         searchField = new JTextField(18);
+
+        departmentFilterBox = new JComboBox<>();
+        departmentFilterBox.addItem("All Departments");
+
+        for(Department d : departmentManager.getAllDepartments()) {
+            departmentFilterBox.addItem(
+                    d.getDepartmentID() + " - " + d.getDepartmentName()
+            );
+        }
 
         searchButton = new JButton("Search");
         showAllButton = new JButton("Show All");
@@ -86,9 +91,10 @@ public class ManageEmployeesFrame extends JFrame {
         stylePrimaryButton(searchButton);
         styleSecondaryButton(showAllButton);
 
-        searchPanel.add(new JLabel("Search by:"));
-        searchPanel.add(searchTypeBox);
+        searchPanel.add(new JLabel("Name:"));
         searchPanel.add(searchField);
+        searchPanel.add(new JLabel("Department ID:"));
+        searchPanel.add(departmentFilterBox);
         searchPanel.add(searchButton);
         searchPanel.add(showAllButton);
 
@@ -153,7 +159,7 @@ public class ManageEmployeesFrame extends JFrame {
 
         departmentBox = new JComboBox<>();
 
-        for (Department d : departmentManager.getAllDepartments()) {
+        for(Department d : departmentManager.getAllDepartments()) {
             departmentBox.addItem(d.getDepartmentName());
         }
 
@@ -247,7 +253,7 @@ public class ManageEmployeesFrame extends JFrame {
         ArrayList<Employee> employees =
                 employeeManager.getAllEmployees();
 
-        for (Employee e : employees) {
+        for(Employee e : employees) {
             addEmployeeRow(e);
         }
     }
@@ -261,9 +267,9 @@ public class ManageEmployeesFrame extends JFrame {
         Object hourlyRate = "-";
         Object workingHours = "-";
 
-        if (e instanceof FullTimeEmployee) {
+        if(e instanceof FullTimeEmployee) {
 
-            FullTimeEmployee f = (FullTimeEmployee) e;
+            FullTimeEmployee f = (FullTimeEmployee)e;
 
             type = "Full-Time";
             basicSalary = f.getMonthlySalary();
@@ -271,7 +277,7 @@ public class ManageEmployeesFrame extends JFrame {
         }
         else {
 
-            PartTimeEmployee p = (PartTimeEmployee) e;
+            PartTimeEmployee p = (PartTimeEmployee)e;
 
             type = "Part-Time";
             hourlyRate = p.getHourlyRate();
@@ -300,7 +306,7 @@ public class ManageEmployeesFrame extends JFrame {
 
         int row = employeeTable.getSelectedRow();
 
-        if (row == -1) {
+        if(row == -1) {
             return;
         }
 
@@ -311,7 +317,7 @@ public class ManageEmployeesFrame extends JFrame {
         Employee e =
                 employeeManager.searchEmployeeByID(selectedEmployeeID);
 
-        if (e == null) {
+        if(e == null) {
             return;
         }
 
@@ -323,9 +329,9 @@ public class ManageEmployeesFrame extends JFrame {
                 e.getDepartment().getDepartmentName()
         );
 
-        if (e instanceof FullTimeEmployee) {
+        if(e instanceof FullTimeEmployee) {
 
-            FullTimeEmployee f = (FullTimeEmployee) e;
+            FullTimeEmployee f = (FullTimeEmployee)e;
 
             salaryLabel.setText("Basic Salary:");
             secondSalaryLabel.setText("Bonus:");
@@ -338,9 +344,9 @@ public class ManageEmployeesFrame extends JFrame {
                     String.valueOf(f.getBonus())
             );
         }
-        else if (e instanceof PartTimeEmployee) {
+        else if(e instanceof PartTimeEmployee) {
 
-            PartTimeEmployee p = (PartTimeEmployee) e;
+            PartTimeEmployee p = (PartTimeEmployee)e;
 
             salaryLabel.setText("Hourly Rate:");
             secondSalaryLabel.setText("Working Hours:");
@@ -379,13 +385,13 @@ public class ManageEmployeesFrame extends JFrame {
         public void valueChanged(
                 javax.swing.event.ListSelectionEvent e) {
 
-            if (!e.getValueIsAdjusting()) {
+            if(!e.getValueIsAdjusting()) {
                 loadSelectedEmployee();
             }
         }
     }
 
-    // Search
+    // Search by name and department ID
     private class SearchHandler implements ActionListener {
 
         @Override
@@ -393,54 +399,33 @@ public class ManageEmployeesFrame extends JFrame {
 
             String searchValue = searchField.getText().trim();
 
-            if (searchValue.isEmpty()) {
+            String selectedDepartment =
+                    (String) departmentFilterBox.getSelectedItem();
 
-                JOptionPane.showMessageDialog(
-                        ManageEmployeesFrame.this,
-                        "Please enter something to search."
+            int departmentID = 0;
+
+            if(!selectedDepartment.equals("All Departments")) {
+
+                departmentID = Integer.parseInt(
+                        selectedDepartment.substring(
+                                0, selectedDepartment.indexOf(" - ")
+                        )
                 );
-
-                return;
             }
+
+            ArrayList<Employee> results =
+                    employeeManager.searchEmployees(
+                            searchValue, departmentID
+                    );
 
             tableModel.setRowCount(0);
 
-            if (searchTypeBox.getSelectedIndex() == 0) {
-
-                try {
-
-                    int id = Integer.parseInt(searchValue);
-
-                    Employee employee =
-                            employeeManager.searchEmployeeByID(id);
-
-                    if (employee != null) {
-                        addEmployeeRow(employee);
-                    }
-                    else {
-                        showNoResults();
-                    }
-                }
-                catch (NumberFormatException ex) {
-
-                    JOptionPane.showMessageDialog(
-                            ManageEmployeesFrame.this,
-                            "Employee ID must be a number."
-                    );
-                }
+            for(Employee emp : results) {
+                addEmployeeRow(emp);
             }
-            else {
 
-                ArrayList<Employee> results =
-                        employeeManager.searchByDepartment(searchValue);
-
-                for (Employee emp : results) {
-                    addEmployeeRow(emp);
-                }
-
-                if (results.isEmpty()) {
-                    showNoResults();
-                }
+            if(results.isEmpty()) {
+                showNoResults();
             }
 
             clearForm();
@@ -462,6 +447,8 @@ public class ManageEmployeesFrame extends JFrame {
         public void actionPerformed(ActionEvent e) {
 
             searchField.setText("");
+            departmentFilterBox.setSelectedIndex(0);
+
             refreshTable();
             clearForm();
         }
@@ -473,7 +460,7 @@ public class ManageEmployeesFrame extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
 
-            if (selectedEmployeeID == -1) {
+            if(selectedEmployeeID == -1) {
 
                 JOptionPane.showMessageDialog(
                         ManageEmployeesFrame.this,
@@ -488,7 +475,7 @@ public class ManageEmployeesFrame extends JFrame {
                 String name = nameField.getText().trim();
                 String position = positionField.getText().trim();
 
-                if (name.isEmpty() || position.isEmpty()
+                if(name.isEmpty() || position.isEmpty()
                         || ageField.getText().trim().isEmpty()
                         || salaryField.getText().trim().isEmpty()
                         || bonusField.getText().trim().isEmpty()) {
@@ -517,7 +504,7 @@ public class ManageEmployeesFrame extends JFrame {
                 Employee employee =
                         employeeManager.searchEmployeeByID(selectedEmployeeID);
 
-                if (employee instanceof PartTimeEmployee
+                if(employee instanceof PartTimeEmployee
                         && secondSalary != Math.floor(secondSalary)) {
 
                     JOptionPane.showMessageDialog(
@@ -538,7 +525,7 @@ public class ManageEmployeesFrame extends JFrame {
                         secondSalary
                 );
 
-                if (updated) {
+                if(updated) {
 
                     JOptionPane.showMessageDialog(
                             ManageEmployeesFrame.this,
@@ -556,21 +543,21 @@ public class ManageEmployeesFrame extends JFrame {
                     );
                 }
             }
-            catch (NumberFormatException ex) {
+            catch(NumberFormatException ex) {
 
                 JOptionPane.showMessageDialog(
                         ManageEmployeesFrame.this,
                         "Please enter valid numeric values."
                 );
             }
-            catch (IllegalArgumentException ex) {
+            catch(IllegalArgumentException ex) {
 
                 JOptionPane.showMessageDialog(
                         ManageEmployeesFrame.this,
                         ex.getMessage()
                 );
             }
-            catch (IOException ex) {
+            catch(IOException ex) {
 
                 JOptionPane.showMessageDialog(
                         ManageEmployeesFrame.this,
@@ -586,7 +573,7 @@ public class ManageEmployeesFrame extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
 
-            if (selectedEmployeeID == -1) {
+            if(selectedEmployeeID == -1) {
 
                 JOptionPane.showMessageDialog(
                         ManageEmployeesFrame.this,
@@ -603,14 +590,14 @@ public class ManageEmployeesFrame extends JFrame {
                     JOptionPane.YES_NO_OPTION
             );
 
-            if (choice == JOptionPane.YES_OPTION) {
+            if(choice == JOptionPane.YES_OPTION) {
 
                 try {
 
                     boolean deleted =
                             employeeManager.deleteEmployee(selectedEmployeeID);
 
-                    if (deleted) {
+                    if(deleted) {
 
                         JOptionPane.showMessageDialog(
                                 ManageEmployeesFrame.this,
@@ -628,7 +615,7 @@ public class ManageEmployeesFrame extends JFrame {
                         );
                     }
                 }
-                catch (IOException ex) {
+                catch(IOException ex) {
 
                     JOptionPane.showMessageDialog(
                             ManageEmployeesFrame.this,
