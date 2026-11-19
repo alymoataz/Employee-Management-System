@@ -1,4 +1,3 @@
-
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -94,8 +93,9 @@ public class EmployeeManager {
         return null;
     }
 
-    // Search by name and department ID
-    public ArrayList<Employee> searchEmployees(String name, int departmentID) {
+    // Search by name, department ID and employee ID (0 = no filter for IDs)
+    public ArrayList<Employee> searchEmployees(String name, int departmentID,
+                                               int employeeID) {
 
         ArrayList<Employee> result = new ArrayList<>();
 
@@ -109,7 +109,10 @@ public class EmployeeManager {
             boolean departmentMatches = departmentID == 0 ||
                     e.getDepartment().getDepartmentID() == departmentID;
 
-            if(nameMatches && departmentMatches) {
+            boolean idMatches = employeeID == 0 ||
+                    e.getEmployeeID() == employeeID;
+
+            if(nameMatches && departmentMatches && idMatches) {
                 result.add(e);
             }
         }
@@ -126,6 +129,7 @@ public class EmployeeManager {
         if(e == null)
             return false;
 
+        // snapshot so a failed update leaves the object untouched
         String oldName = e.getFullName();
         int oldAge = e.getAge();
         String oldPosition = e.getPosition();
@@ -149,18 +153,23 @@ public class EmployeeManager {
             e.setDepartment(department);
 
             if(e instanceof FullTimeEmployee) {
+
                 FullTimeEmployee f = (FullTimeEmployee)e;
+
                 f.setMonthlySalary(salary1);
                 f.setBonus(salary2);
             }
             else if(e instanceof PartTimeEmployee) {
+
                 PartTimeEmployee p = (PartTimeEmployee)e;
+
                 p.setHourlyRate(salary1);
                 p.setHoursWorked((int)salary2);
             }
         }
         catch(IllegalArgumentException ex) {
 
+            // restore the old (valid) values, then let the GUI show the error
             e.setFullName(oldName);
             e.setAge(oldAge);
             e.setPosition(oldPosition);

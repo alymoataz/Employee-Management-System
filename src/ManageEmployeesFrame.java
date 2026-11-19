@@ -1,4 +1,3 @@
-
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -16,6 +15,7 @@ public class ManageEmployeesFrame extends JFrame {
     private DefaultTableModel tableModel;
 
     private JTextField searchField;
+    private JTextField searchIdField;
     private JComboBox<String> departmentFilterBox;
 
     private JTextField nameField;
@@ -75,6 +75,7 @@ public class ManageEmployeesFrame extends JFrame {
         searchPanel.setOpaque(false);
 
         searchField = new JTextField(18);
+        searchIdField = new JTextField(6);
 
         departmentFilterBox = new JComboBox<>();
         departmentFilterBox.addItem("All Departments");
@@ -93,6 +94,8 @@ public class ManageEmployeesFrame extends JFrame {
 
         searchPanel.add(new JLabel("Name:"));
         searchPanel.add(searchField);
+        searchPanel.add(new JLabel("Employee ID:"));
+        searchPanel.add(searchIdField);
         searchPanel.add(new JLabel("Department ID:"));
         searchPanel.add(departmentFilterBox);
         searchPanel.add(searchButton);
@@ -391,7 +394,7 @@ public class ManageEmployeesFrame extends JFrame {
         }
     }
 
-    // Search by name and department ID
+    // Search by name, employee ID and department ID
     private class SearchHandler implements ActionListener {
 
         @Override
@@ -413,9 +416,34 @@ public class ManageEmployeesFrame extends JFrame {
                 );
             }
 
+            int employeeID = 0;
+            String idText = searchIdField.getText().trim();
+
+            if(!idText.isEmpty()) {
+
+                try {
+                    employeeID = Integer.parseInt(idText);
+
+                    if(employeeID <= 0) {
+                        throw new NumberFormatException();
+                    }
+                }
+                catch(NumberFormatException ex) {
+
+                    JOptionPane.showMessageDialog(
+                            ManageEmployeesFrame.this,
+                            "Employee ID must be a positive whole number.",
+                            "Invalid Input",
+                            JOptionPane.ERROR_MESSAGE
+                    );
+
+                    return;
+                }
+            }
+
             ArrayList<Employee> results =
                     employeeManager.searchEmployees(
-                            searchValue, departmentID
+                            searchValue, departmentID, employeeID
                     );
 
             tableModel.setRowCount(0);
@@ -447,6 +475,7 @@ public class ManageEmployeesFrame extends JFrame {
         public void actionPerformed(ActionEvent e) {
 
             searchField.setText("");
+            searchIdField.setText("");
             departmentFilterBox.setSelectedIndex(0);
 
             refreshTable();
