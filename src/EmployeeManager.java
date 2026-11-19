@@ -126,24 +126,56 @@ public class EmployeeManager {
         if(e == null)
             return false;
 
-        e.setFullName(name);
-        e.setAge(age);
-        e.setPosition(position);
-        e.setDepartment(department);
+        String oldName = e.getFullName();
+        int oldAge = e.getAge();
+        String oldPosition = e.getPosition();
+        Department oldDepartment = e.getDepartment();
+        double oldSalary1 = 0;
+        double oldSalary2 = 0;
 
         if(e instanceof FullTimeEmployee) {
-
-            FullTimeEmployee f = (FullTimeEmployee)e;
-
-            f.setMonthlySalary(salary1);
-            f.setBonus(salary2);
+            oldSalary1 = ((FullTimeEmployee)e).getMonthlySalary();
+            oldSalary2 = ((FullTimeEmployee)e).getBonus();
         }
         else if(e instanceof PartTimeEmployee) {
+            oldSalary1 = ((PartTimeEmployee)e).getHourlyRate();
+            oldSalary2 = ((PartTimeEmployee)e).getHoursWorked();
+        }
 
-            PartTimeEmployee p = (PartTimeEmployee)e;
+        try {
+            e.setFullName(name);
+            e.setAge(age);
+            e.setPosition(position);
+            e.setDepartment(department);
 
-            p.setHourlyRate(salary1);
-            p.setHoursWorked((int)salary2);
+            if(e instanceof FullTimeEmployee) {
+                FullTimeEmployee f = (FullTimeEmployee)e;
+                f.setMonthlySalary(salary1);
+                f.setBonus(salary2);
+            }
+            else if(e instanceof PartTimeEmployee) {
+                PartTimeEmployee p = (PartTimeEmployee)e;
+                p.setHourlyRate(salary1);
+                p.setHoursWorked((int)salary2);
+            }
+        }
+        catch(IllegalArgumentException ex) {
+
+            e.setFullName(oldName);
+            e.setAge(oldAge);
+            e.setPosition(oldPosition);
+            e.setDepartment(oldDepartment);
+
+            if(e instanceof FullTimeEmployee) {
+                ((FullTimeEmployee)e).setMonthlySalary(oldSalary1);
+                ((FullTimeEmployee)e).setBonus(oldSalary2);
+            }
+            else if(e instanceof PartTimeEmployee) {
+                ((PartTimeEmployee)e).setHourlyRate(oldSalary1);
+                ((PartTimeEmployee)e).setHoursWorked((int)oldSalary2);
+            }
+
+            throw ex;
         }
 
         EmployeeFileHandler.saveEmployees(employees);
