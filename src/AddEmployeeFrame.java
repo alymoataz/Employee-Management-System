@@ -13,16 +13,14 @@ public class AddEmployeeFrame extends JFrame {
     private JTextField nameField;
     private JTextField ageField;
     private JTextField positionField;
+    private JTextField salaryField;
+    private JTextField bonusField;
 
     private JComboBox<String> departmentBox;
     private JComboBox<String> employeeTypeBox;
 
-    private JTextField salaryField;
-    private JTextField bonusField;
-    private JTextField hourlyRateField;
-    private JTextField hoursWorkedField;
-
-    private JPanel salaryPanel;
+    private JLabel salaryLabel;
+    private JLabel bonusLabel;
 
     private JButton addButton;
     private JButton backButton;
@@ -36,81 +34,64 @@ public class AddEmployeeFrame extends JFrame {
         this.dashboard = dashboard;
 
         setTitle("Employee Management System - Add Employee");
-        setSize(550, 570);
+        setSize(650, 650);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);
 
-        JPanel mainPanel = new JPanel(new BorderLayout(15, 20));
-        mainPanel.setBackground(new Color(240, 244, 249));
-        mainPanel.setBorder(
-                BorderFactory.createEmptyBorder(25, 30, 25, 30)
+        setLayout(new BorderLayout(15, 20));
+
+        getContentPane().setBackground(new Color(240, 244, 249));
+
+        // Title panel
+        JPanel titlePanel = new JPanel(new BorderLayout());
+        titlePanel.setBackground(new Color(240, 244, 249));
+        titlePanel.setBorder(
+                BorderFactory.createEmptyBorder(25, 20, 10, 20)
         );
 
-        // Title
-        JLabel title = new JLabel("Add New Employee", JLabel.CENTER);
+        JLabel title = new JLabel(
+                "Add New Employee",
+                JLabel.CENTER
+        );
 
         title.setFont(new Font("Arial", Font.BOLD, 22));
         title.setForeground(new Color(31, 58, 95));
 
-        mainPanel.add(title, BorderLayout.NORTH);
+        titlePanel.add(title, BorderLayout.CENTER);
 
-        // Form
-        JPanel formPanel = new JPanel(new GridLayout(5, 2, 12, 15));
-        formPanel.setOpaque(false);
+        // Form panel
+        JPanel formPanel = new JPanel(new GridLayout(8, 2, 12, 15));
 
+        formPanel.setBackground(new Color(240, 244, 249));
+        formPanel.setBorder(
+                BorderFactory.createEmptyBorder(15, 35, 30, 35)
+        );
+
+        // Text fields
         nameField = new JTextField();
         ageField = new JTextField();
         positionField = new JTextField();
+        salaryField = new JTextField();
+        bonusField = new JTextField();
 
+        // Department combo box
         departmentBox = new JComboBox<>();
 
-        for(Department d : departmentManager.getAllDepartments()) {
+        for (Department d : departmentManager.getAllDepartments()) {
             departmentBox.addItem(d.getDepartmentName());
         }
 
+        // Employee type combo box
         employeeTypeBox = new JComboBox<>(
                 new String[]{"Full-Time", "Part-Time"}
         );
 
-        formPanel.add(new JLabel("Full Name:"));
-        formPanel.add(nameField);
-
-        formPanel.add(new JLabel("Age:"));
-        formPanel.add(ageField);
-
-        formPanel.add(new JLabel("Position:"));
-        formPanel.add(positionField);
-
-        formPanel.add(new JLabel("Department:"));
-        formPanel.add(departmentBox);
-
-        formPanel.add(new JLabel("Employee Type:"));
-        formPanel.add(employeeTypeBox);
-
-        mainPanel.add(formPanel, BorderLayout.CENTER);
-
-        // Salary panel
-        salaryPanel = new JPanel(new GridLayout(2, 2, 12, 15));
-        salaryPanel.setOpaque(false);
-
-        salaryField = new JTextField();
-        bonusField = new JTextField();
-
-        hourlyRateField = new JTextField();
-        hoursWorkedField = new JTextField();
-
-        updateSalaryFields();
-
-        JPanel bottomPanel = new JPanel(new BorderLayout(15, 20));
-        bottomPanel.setOpaque(false);
-
-        bottomPanel.add(salaryPanel, BorderLayout.CENTER);
+        // Salary labels
+        salaryLabel = new JLabel("Basic Salary:");
+        bonusLabel = new JLabel("Bonus:");
 
         // Buttons
-        JPanel buttonPanel = new JPanel(new GridLayout(1, 2, 15, 0));
-        buttonPanel.setOpaque(false);
-
         addButton = new JButton("Add Employee");
         backButton = new JButton("Back");
 
@@ -126,14 +107,34 @@ public class AddEmployeeFrame extends JFrame {
         addButton.setFocusPainted(false);
         backButton.setFocusPainted(false);
 
-        buttonPanel.add(addButton);
-        buttonPanel.add(backButton);
+        // Add components to form
+        formPanel.add(new JLabel("Full Name:"));
+        formPanel.add(nameField);
 
-        bottomPanel.add(buttonPanel, BorderLayout.SOUTH);
+        formPanel.add(new JLabel("Age:"));
+        formPanel.add(ageField);
 
-        mainPanel.add(bottomPanel, BorderLayout.SOUTH);
+        formPanel.add(new JLabel("Position:"));
+        formPanel.add(positionField);
 
-        add(mainPanel);
+        formPanel.add(new JLabel("Department:"));
+        formPanel.add(departmentBox);
+
+        formPanel.add(new JLabel("Employee Type:"));
+        formPanel.add(employeeTypeBox);
+
+        formPanel.add(salaryLabel);
+        formPanel.add(salaryField);
+
+        formPanel.add(bonusLabel);
+        formPanel.add(bonusField);
+
+        formPanel.add(addButton);
+        formPanel.add(backButton);
+
+        // Add panels to frame
+        add(titlePanel, BorderLayout.NORTH);
+        add(formPanel, BorderLayout.CENTER);
 
         // Action listeners
         employeeTypeBox.addActionListener(new TypeHandler());
@@ -141,31 +142,21 @@ public class AddEmployeeFrame extends JFrame {
         backButton.addActionListener(new BackHandler());
     }
 
+    // Update salary labels
     private void updateSalaryFields() {
-
-        salaryPanel.removeAll();
 
         String type = (String) employeeTypeBox.getSelectedItem();
 
-        if(type.equals("Full-Time")) {
+        if (type.equals("Full-Time")) {
 
-            salaryPanel.add(new JLabel("Basic Salary:"));
-            salaryPanel.add(salaryField);
+            salaryLabel.setText("Basic Salary:");
+            bonusLabel.setText("Bonus:");
 
-            salaryPanel.add(new JLabel("Bonus:"));
-            salaryPanel.add(bonusField);
+        } else {
+
+            salaryLabel.setText("Hourly Rate:");
+            bonusLabel.setText("Working Hours:");
         }
-        else {
-
-            salaryPanel.add(new JLabel("Hourly Rate:"));
-            salaryPanel.add(hourlyRateField);
-
-            salaryPanel.add(new JLabel("Working Hours:"));
-            salaryPanel.add(hoursWorkedField);
-        }
-
-        salaryPanel.revalidate();
-        salaryPanel.repaint();
     }
 
     private class TypeHandler implements ActionListener {
@@ -186,8 +177,10 @@ public class AddEmployeeFrame extends JFrame {
                 String name = nameField.getText().trim();
                 String position = positionField.getText().trim();
 
-                if(name.isEmpty() || position.isEmpty()
-                        || ageField.getText().trim().isEmpty()) {
+                if (name.isEmpty() || position.isEmpty()
+                        || ageField.getText().trim().isEmpty()
+                        || salaryField.getText().trim().isEmpty()
+                        || bonusField.getText().trim().isEmpty()) {
 
                     JOptionPane.showMessageDialog(
                             AddEmployeeFrame.this,
@@ -199,11 +192,13 @@ public class AddEmployeeFrame extends JFrame {
 
                 int age = Integer.parseInt(ageField.getText().trim());
 
-                if(age < 20) {
+                if (age < 20) {
+
                     JOptionPane.showMessageDialog(
                             AddEmployeeFrame.this,
                             "Employee age must be at least 20."
                     );
+
                     return;
                 }
 
@@ -218,25 +213,29 @@ public class AddEmployeeFrame extends JFrame {
 
                 Employee employee;
 
-                if(type.equals("Full-Time")) {
+                if (type.equals("Full-Time")) {
 
-                    double salary =
-                            Double.parseDouble(salaryField.getText().trim());
+                    double salary = Double.parseDouble(
+                            salaryField.getText().trim()
+                    );
 
-                    double bonus =
-                            Double.parseDouble(bonusField.getText().trim());
+                    double bonus = Double.parseDouble(
+                            bonusField.getText().trim()
+                    );
 
                     employee = new FullTimeEmployee(
                             name, age, position, department, salary, bonus
                     );
-                }
-                else {
 
-                    double hourlyRate =
-                            Double.parseDouble(hourlyRateField.getText().trim());
+                } else {
 
-                    int hours =
-                            Integer.parseInt(hoursWorkedField.getText().trim());
+                    double hourlyRate = Double.parseDouble(
+                            salaryField.getText().trim()
+                    );
+
+                    int hours = Integer.parseInt(
+                            bonusField.getText().trim()
+                    );
 
                     employee = new PartTimeEmployee(
                             name, age, position, department,
@@ -244,7 +243,7 @@ public class AddEmployeeFrame extends JFrame {
                     );
                 }
 
-                if(employeeManager.addEmployee(employee)) {
+                if (employeeManager.addEmployee(employee)) {
 
                     JOptionPane.showMessageDialog(
                             AddEmployeeFrame.this,
@@ -255,8 +254,7 @@ public class AddEmployeeFrame extends JFrame {
                     clearFields();
                 }
 
-            }
-            catch(NumberFormatException ex) {
+            } catch (NumberFormatException ex) {
 
                 JOptionPane.showMessageDialog(
                         AddEmployeeFrame.this,
@@ -264,8 +262,8 @@ public class AddEmployeeFrame extends JFrame {
                         "Invalid Input",
                         JOptionPane.ERROR_MESSAGE
                 );
-            }
-            catch(IllegalArgumentException ex) {
+
+            } catch (IllegalArgumentException ex) {
 
                 JOptionPane.showMessageDialog(
                         AddEmployeeFrame.this,
@@ -273,8 +271,8 @@ public class AddEmployeeFrame extends JFrame {
                         "Invalid Input",
                         JOptionPane.ERROR_MESSAGE
                 );
-            }
-            catch(IOException ex) {
+
+            } catch (IOException ex) {
 
                 JOptionPane.showMessageDialog(
                         AddEmployeeFrame.this,
@@ -305,10 +303,6 @@ public class AddEmployeeFrame extends JFrame {
         salaryField.setText("");
         bonusField.setText("");
 
-        hourlyRateField.setText("");
-        hoursWorkedField.setText("");
-
         employeeTypeBox.setSelectedIndex(0);
     }
 }
-
