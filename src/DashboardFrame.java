@@ -1,3 +1,4 @@
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -19,17 +20,19 @@ public class DashboardFrame extends JFrame {
         this.departmentManager = departmentManager;
 
         setTitle("Employee Management System - Dashboard");
-        setSize(500, 450);
+        setSize(630, 570);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);
 
-        JPanel mainPanel = new JPanel(new BorderLayout(20, 25));
+        // One main panel
+        JPanel mainPanel = new JPanel(new GridLayout(5, 1, 0, 18));
         mainPanel.setBackground(new Color(240, 244, 249));
         mainPanel.setBorder(
                 BorderFactory.createEmptyBorder(30, 35, 30, 35)
         );
 
+        // Welcome label
         JLabel title = new JLabel(
                 "Welcome to the Employee Management System",
                 JLabel.CENTER
@@ -38,21 +41,19 @@ public class DashboardFrame extends JFrame {
         title.setFont(new Font("Arial", Font.BOLD, 20));
         title.setForeground(new Color(31, 58, 95));
 
-        mainPanel.add(title, BorderLayout.NORTH);
-
-        JPanel buttonPanel = new JPanel(new GridLayout(4, 1, 0, 18));
-        buttonPanel.setOpaque(false);
-
+        // Buttons
         addButton = new JButton("Add Employee");
         manageButton = new JButton("Manage Employees");
         logoutButton = new JButton("Log Out");
         exitButton = new JButton("Exit");
 
+        // Button fonts
         addButton.setFont(new Font("Arial", Font.BOLD, 16));
         manageButton.setFont(new Font("Arial", Font.BOLD, 16));
         logoutButton.setFont(new Font("Arial", Font.BOLD, 16));
         exitButton.setFont(new Font("Arial", Font.BOLD, 16));
 
+        // Button colors
         addButton.setBackground(new Color(43, 91, 145));
         addButton.setForeground(Color.WHITE);
 
@@ -65,20 +66,22 @@ public class DashboardFrame extends JFrame {
         exitButton.setBackground(new Color(220, 226, 234));
         exitButton.setForeground(new Color(40, 50, 65));
 
+        // Remove focus borders
         addButton.setFocusPainted(false);
         manageButton.setFocusPainted(false);
         logoutButton.setFocusPainted(false);
         exitButton.setFocusPainted(false);
 
-        buttonPanel.add(addButton);
-        buttonPanel.add(manageButton);
-        buttonPanel.add(logoutButton);
-        buttonPanel.add(exitButton);
-
-        mainPanel.add(buttonPanel, BorderLayout.CENTER);
+        // Add everything to the same panel
+        mainPanel.add(title);
+        mainPanel.add(addButton);
+        mainPanel.add(manageButton);
+        mainPanel.add(logoutButton);
+        mainPanel.add(exitButton);
 
         add(mainPanel);
 
+        // Event handlers
         addButton.addActionListener(new AddHandler());
         manageButton.addActionListener(new ManageHandler());
         logoutButton.addActionListener(new LogoutHandler());
@@ -129,7 +132,7 @@ public class DashboardFrame extends JFrame {
                     JOptionPane.YES_NO_OPTION
             );
 
-            if(choice == JOptionPane.YES_OPTION) {
+            if (choice == JOptionPane.YES_OPTION) {
 
                 LoginFrame login = new LoginFrame(
                         employeeManager,
