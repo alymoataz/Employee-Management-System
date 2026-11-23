@@ -91,7 +91,7 @@ public class EmployeeManager {
         return null;
     }
 
-    // Search by name, department ID and employee ID (0 = no filter for IDs)
+    // Search by name, department ID and employee ID (0 = no filter for IDs,""= no filter for name)
     public ArrayList<Employee> searchEmployees(String name, int departmentID,
                                                int employeeID) {
 
