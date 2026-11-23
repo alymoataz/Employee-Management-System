@@ -24,11 +24,9 @@ public class EmployeeManager {
     public boolean login(String username, String password) {
 
         if(this.username.equals(username) && this.password.equals(password)) {
-            System.out.println("Welcome login successful");
             return true;
         }
         else {
-            System.out.println("Incorrect username or password");
             return false;
         }
     }
