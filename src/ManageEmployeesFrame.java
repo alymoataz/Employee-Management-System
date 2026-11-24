@@ -1,3 +1,4 @@
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -21,7 +22,6 @@ public class ManageEmployeesFrame extends JFrame {
     private JTextField nameField;
     private JTextField ageField;
     private JTextField positionField;
-
     private JComboBox<String> departmentBox;
 
     private JTextField salaryField;
@@ -38,6 +38,7 @@ public class ManageEmployeesFrame extends JFrame {
 
     private int selectedEmployeeID = -1;
 
+
     public ManageEmployeesFrame(EmployeeManager employeeManager,
                                 DepartmentManager departmentManager,
                                 DashboardFrame dashboard) {
@@ -51,28 +52,32 @@ public class ManageEmployeesFrame extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        JPanel mainPanel = new JPanel(new BorderLayout(15, 15));
-        mainPanel.setBackground(new Color(240, 244, 249));
-        mainPanel.setBorder(
+        setLayout(new BorderLayout(15, 15));
+        ((JPanel) getContentPane()).setBorder(
                 BorderFactory.createEmptyBorder(20, 25, 20, 25)
         );
+        getContentPane().setBackground(new Color(240, 244, 249));
 
-        // Title
+
+        // 1. SEARCH PANEL - NORTH
+
+        JPanel searchPanel = new JPanel(new BorderLayout(10, 15));
+        searchPanel.setOpaque(false);
+
         JLabel title = new JLabel("Employee Records", JLabel.CENTER);
         title.setFont(new Font("Arial", Font.BOLD, 23));
         title.setForeground(new Color(31, 58, 95));
 
-        mainPanel.add(title, BorderLayout.NORTH);
+        searchPanel.add(title, BorderLayout.NORTH);
 
-        // Center panel
-        JPanel centerPanel = new JPanel(new BorderLayout(10, 15));
-        centerPanel.setOpaque(false);
 
-        // Search panel
-        JPanel searchPanel = new JPanel(
+        // Search controls
+
+        JPanel searchControls = new JPanel(
                 new FlowLayout(FlowLayout.LEFT, 10, 5)
         );
-        searchPanel.setOpaque(false);
+
+        searchControls.setOpaque(false);
 
         searchField = new JTextField(18);
         searchIdField = new JTextField(6);
@@ -80,7 +85,7 @@ public class ManageEmployeesFrame extends JFrame {
         departmentFilterBox = new JComboBox<>();
         departmentFilterBox.addItem("All Departments");
 
-        for(Department d : departmentManager.getAllDepartments()) {
+        for (Department d : departmentManager.getAllDepartments()) {
             departmentFilterBox.addItem(
                     d.getDepartmentID() + " - " + d.getDepartmentName()
             );
@@ -92,18 +97,28 @@ public class ManageEmployeesFrame extends JFrame {
         stylePrimaryButton(searchButton);
         styleSecondaryButton(showAllButton);
 
-        searchPanel.add(new JLabel("Name:"));
-        searchPanel.add(searchField);
-        searchPanel.add(new JLabel("Employee ID:"));
-        searchPanel.add(searchIdField);
-        searchPanel.add(new JLabel("Department ID:"));
-        searchPanel.add(departmentFilterBox);
-        searchPanel.add(searchButton);
-        searchPanel.add(showAllButton);
+        searchControls.add(new JLabel("Name:"));
+        searchControls.add(searchField);
 
-        centerPanel.add(searchPanel, BorderLayout.NORTH);
+        searchControls.add(new JLabel("Employee ID:"));
+        searchControls.add(searchIdField);
 
-        // Employee table
+        searchControls.add(new JLabel("Department ID:"));
+        searchControls.add(departmentFilterBox);
+
+        searchControls.add(searchButton);
+        searchControls.add(showAllButton);
+
+        searchPanel.add(searchControls, BorderLayout.CENTER);
+
+        add(searchPanel, BorderLayout.NORTH);
+
+
+        // 2. TABLE PANEL - CENTER
+
+        JPanel tablePanel = new JPanel(new BorderLayout());
+        tablePanel.setOpaque(false);
+
         String[] columns = {
                 "ID",
                 "Full Name",
@@ -139,11 +154,14 @@ public class ManageEmployeesFrame extends JFrame {
         );
 
         JScrollPane scrollPane = new JScrollPane(employeeTable);
-        centerPanel.add(scrollPane, BorderLayout.CENTER);
 
-        mainPanel.add(centerPanel, BorderLayout.CENTER);
+        tablePanel.add(scrollPane, BorderLayout.CENTER);
 
-        // Update form
+        add(tablePanel, BorderLayout.CENTER);
+
+
+        // 3. BOTTOM PANEL - SOUTH
+
         JPanel bottomPanel = new JPanel(new BorderLayout(10, 15));
         bottomPanel.setOpaque(false);
 
@@ -152,6 +170,9 @@ public class ManageEmployeesFrame extends JFrame {
         formTitle.setForeground(new Color(31, 58, 95));
 
         bottomPanel.add(formTitle, BorderLayout.NORTH);
+
+
+        // Employee update form
 
         JPanel formPanel = new JPanel(new GridLayout(3, 4, 10, 12));
         formPanel.setOpaque(false);
@@ -162,7 +183,7 @@ public class ManageEmployeesFrame extends JFrame {
 
         departmentBox = new JComboBox<>();
 
-        for(Department d : departmentManager.getAllDepartments()) {
+        for (Department d : departmentManager.getAllDepartments()) {
             departmentBox.addItem(d.getDepartmentName());
         }
 
@@ -192,7 +213,9 @@ public class ManageEmployeesFrame extends JFrame {
 
         bottomPanel.add(formPanel, BorderLayout.CENTER);
 
+
         // Buttons
+
         JPanel buttonPanel = new JPanel(
                 new GridLayout(1, 3, 12, 0)
         );
@@ -213,11 +236,11 @@ public class ManageEmployeesFrame extends JFrame {
 
         bottomPanel.add(buttonPanel, BorderLayout.SOUTH);
 
-        mainPanel.add(bottomPanel, BorderLayout.SOUTH);
+        add(bottomPanel, BorderLayout.SOUTH);
 
-        add(mainPanel);
 
-        // Listeners
+        // Event listeners
+
         employeeTable.getSelectionModel().addListSelectionListener(
                 new EmployeeSelectionHandler()
         );
@@ -231,7 +254,9 @@ public class ManageEmployeesFrame extends JFrame {
         refreshTable();
     }
 
+
     // Button styling
+
     private void stylePrimaryButton(JButton button) {
 
         button.setBackground(new Color(43, 91, 145));
@@ -239,6 +264,7 @@ public class ManageEmployeesFrame extends JFrame {
         button.setFont(new Font("Arial", Font.BOLD, 13));
         button.setFocusPainted(false);
     }
+
 
     private void styleSecondaryButton(JButton button) {
 
@@ -248,7 +274,9 @@ public class ManageEmployeesFrame extends JFrame {
         button.setFocusPainted(false);
     }
 
-    // Display employees in JTable
+
+    // Refresh table with all employees
+
     private void refreshTable() {
 
         tableModel.setRowCount(0);
@@ -256,12 +284,14 @@ public class ManageEmployeesFrame extends JFrame {
         ArrayList<Employee> employees =
                 employeeManager.getAllEmployees();
 
-        for(Employee e : employees) {
+        for (Employee e : employees) {
             addEmployeeRow(e);
         }
     }
 
+
     // Add one employee to the table
+
     private void addEmployeeRow(Employee e) {
 
         String type;
@@ -270,17 +300,17 @@ public class ManageEmployeesFrame extends JFrame {
         Object hourlyRate = "-";
         Object workingHours = "-";
 
-        if(e instanceof FullTimeEmployee) {
+        if (e instanceof FullTimeEmployee) {
 
-            FullTimeEmployee f = (FullTimeEmployee)e;
+            FullTimeEmployee f = (FullTimeEmployee) e;
 
             type = "Full-Time";
             basicSalary = f.getMonthlySalary();
             bonus = f.getBonus();
-        }
-        else {
 
-            PartTimeEmployee p = (PartTimeEmployee)e;
+        } else {
+
+            PartTimeEmployee p = (PartTimeEmployee) e;
 
             type = "Part-Time";
             hourlyRate = p.getHourlyRate();
@@ -304,23 +334,27 @@ public class ManageEmployeesFrame extends JFrame {
         tableModel.addRow(row);
     }
 
+
     // Load selected employee into form
+
     private void loadSelectedEmployee() {
 
         int row = employeeTable.getSelectedRow();
 
-        if(row == -1) {
+        if (row == -1) {
             return;
         }
 
+        int modelRow = employeeTable.convertRowIndexToModel(row);
+
         selectedEmployeeID = Integer.parseInt(
-                tableModel.getValueAt(row, 0).toString()
+                tableModel.getValueAt(modelRow, 0).toString()
         );
 
         Employee e =
                 employeeManager.searchEmployeeByID(selectedEmployeeID);
 
-        if(e == null) {
+        if (e == null) {
             return;
         }
 
@@ -332,9 +366,9 @@ public class ManageEmployeesFrame extends JFrame {
                 e.getDepartment().getDepartmentName()
         );
 
-        if(e instanceof FullTimeEmployee) {
+        if (e instanceof FullTimeEmployee) {
 
-            FullTimeEmployee f = (FullTimeEmployee)e;
+            FullTimeEmployee f = (FullTimeEmployee) e;
 
             salaryLabel.setText("Basic Salary:");
             secondSalaryLabel.setText("Bonus:");
@@ -346,10 +380,10 @@ public class ManageEmployeesFrame extends JFrame {
             bonusField.setText(
                     String.valueOf(f.getBonus())
             );
-        }
-        else if(e instanceof PartTimeEmployee) {
 
-            PartTimeEmployee p = (PartTimeEmployee)e;
+        } else if (e instanceof PartTimeEmployee) {
+
+            PartTimeEmployee p = (PartTimeEmployee) e;
 
             salaryLabel.setText("Hourly Rate:");
             secondSalaryLabel.setText("Working Hours:");
@@ -364,7 +398,12 @@ public class ManageEmployeesFrame extends JFrame {
         }
     }
 
+
+    // Clear update form
+
     private void clearForm() {
+
+        selectedEmployeeID = -1;
 
         nameField.setText("");
         ageField.setText("");
@@ -373,14 +412,19 @@ public class ManageEmployeesFrame extends JFrame {
         salaryField.setText("");
         bonusField.setText("");
 
+        if (departmentBox.getItemCount() > 0) {
+            departmentBox.setSelectedIndex(0);
+        }
+
         salaryLabel.setText("Basic Salary:");
         secondSalaryLabel.setText("Bonus:");
 
-        selectedEmployeeID = -1;
         employeeTable.clearSelection();
     }
 
-    // Table selection
+
+    // Table selection listener
+
     private class EmployeeSelectionHandler
             implements javax.swing.event.ListSelectionListener {
 
@@ -388,13 +432,15 @@ public class ManageEmployeesFrame extends JFrame {
         public void valueChanged(
                 javax.swing.event.ListSelectionEvent e) {
 
-            if(!e.getValueIsAdjusting()) {
+            if (!e.getValueIsAdjusting()) {
                 loadSelectedEmployee();
             }
         }
     }
 
+
     // Search by name, employee ID and department ID
+
     private class SearchHandler implements ActionListener {
 
         @Override
@@ -407,7 +453,8 @@ public class ManageEmployeesFrame extends JFrame {
 
             int departmentID = 0;
 
-            if(!selectedDepartment.equals("All Departments")) {
+            if (selectedDepartment != null &&
+                    !selectedDepartment.equals("All Departments")) {
 
                 departmentID = Integer.parseInt(
                         selectedDepartment.substring(
@@ -419,16 +466,17 @@ public class ManageEmployeesFrame extends JFrame {
             int employeeID = 0;
             String idText = searchIdField.getText().trim();
 
-            if(!idText.isEmpty()) {
+            if (!idText.isEmpty()) {
 
                 try {
+
                     employeeID = Integer.parseInt(idText);
 
-                    if(employeeID <= 0) {
+                    if (employeeID <= 0) {
                         throw new NumberFormatException();
                     }
-                }
-                catch(NumberFormatException ex) {
+
+                } catch (NumberFormatException ex) {
 
                     JOptionPane.showMessageDialog(
                             ManageEmployeesFrame.this,
@@ -448,17 +496,18 @@ public class ManageEmployeesFrame extends JFrame {
 
             tableModel.setRowCount(0);
 
-            for(Employee emp : results) {
+            for (Employee emp : results) {
                 addEmployeeRow(emp);
             }
 
-            if(results.isEmpty()) {
+            if (results.isEmpty()) {
                 showNoResults();
             }
 
             clearForm();
         }
     }
+
 
     private void showNoResults() {
 
@@ -468,7 +517,9 @@ public class ManageEmployeesFrame extends JFrame {
         );
     }
 
-    // Show all
+
+    // Show all employees
+
     private class ShowAllHandler implements ActionListener {
 
         @Override
@@ -483,13 +534,15 @@ public class ManageEmployeesFrame extends JFrame {
         }
     }
 
-    // Update
+
+    // Update selected employee
+
     private class UpdateHandler implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
 
-            if(selectedEmployeeID == -1) {
+            if (selectedEmployeeID == -1) {
 
                 JOptionPane.showMessageDialog(
                         ManageEmployeesFrame.this,
@@ -504,7 +557,7 @@ public class ManageEmployeesFrame extends JFrame {
                 String name = nameField.getText().trim();
                 String position = positionField.getText().trim();
 
-                if(name.isEmpty() || position.isEmpty()
+                if (name.isEmpty() || position.isEmpty()
                         || ageField.getText().trim().isEmpty()
                         || salaryField.getText().trim().isEmpty()
                         || bonusField.getText().trim().isEmpty()) {
@@ -525,6 +578,16 @@ public class ManageEmployeesFrame extends JFrame {
                 double secondSalary =
                         Double.parseDouble(bonusField.getText().trim());
 
+                if (age < 20) {
+
+                    JOptionPane.showMessageDialog(
+                            ManageEmployeesFrame.this,
+                            "Age must be at least 20."
+                    );
+
+                    return;
+                }
+
                 Department department =
                         departmentManager.searchByName(
                                 (String) departmentBox.getSelectedItem()
@@ -533,7 +596,7 @@ public class ManageEmployeesFrame extends JFrame {
                 Employee employee =
                         employeeManager.searchEmployeeByID(selectedEmployeeID);
 
-                if(employee instanceof PartTimeEmployee
+                if (employee instanceof PartTimeEmployee
                         && secondSalary != Math.floor(secondSalary)) {
 
                     JOptionPane.showMessageDialog(
@@ -554,7 +617,7 @@ public class ManageEmployeesFrame extends JFrame {
                         secondSalary
                 );
 
-                if(updated) {
+                if (updated) {
 
                     JOptionPane.showMessageDialog(
                             ManageEmployeesFrame.this,
@@ -563,30 +626,30 @@ public class ManageEmployeesFrame extends JFrame {
 
                     refreshTable();
                     clearForm();
-                }
-                else {
+
+                } else {
 
                     JOptionPane.showMessageDialog(
                             ManageEmployeesFrame.this,
                             "Employee not found."
                     );
                 }
-            }
-            catch(NumberFormatException ex) {
+
+            } catch (NumberFormatException ex) {
 
                 JOptionPane.showMessageDialog(
                         ManageEmployeesFrame.this,
                         "Please enter valid numeric values."
                 );
-            }
-            catch(IllegalArgumentException ex) {
+
+            } catch (IllegalArgumentException ex) {
 
                 JOptionPane.showMessageDialog(
                         ManageEmployeesFrame.this,
                         ex.getMessage()
                 );
-            }
-            catch(IOException ex) {
+
+            } catch (IOException ex) {
 
                 JOptionPane.showMessageDialog(
                         ManageEmployeesFrame.this,
@@ -596,13 +659,15 @@ public class ManageEmployeesFrame extends JFrame {
         }
     }
 
-    // Delete
+
+    // Delete selected employee
+
     private class DeleteHandler implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
 
-            if(selectedEmployeeID == -1) {
+            if (selectedEmployeeID == -1) {
 
                 JOptionPane.showMessageDialog(
                         ManageEmployeesFrame.this,
@@ -619,14 +684,14 @@ public class ManageEmployeesFrame extends JFrame {
                     JOptionPane.YES_NO_OPTION
             );
 
-            if(choice == JOptionPane.YES_OPTION) {
+            if (choice == JOptionPane.YES_OPTION) {
 
                 try {
 
                     boolean deleted =
                             employeeManager.deleteEmployee(selectedEmployeeID);
 
-                    if(deleted) {
+                    if (deleted) {
 
                         JOptionPane.showMessageDialog(
                                 ManageEmployeesFrame.this,
@@ -635,16 +700,16 @@ public class ManageEmployeesFrame extends JFrame {
 
                         refreshTable();
                         clearForm();
-                    }
-                    else {
+
+                    } else {
 
                         JOptionPane.showMessageDialog(
                                 ManageEmployeesFrame.this,
                                 "Employee not found."
                         );
                     }
-                }
-                catch(IOException ex) {
+
+                } catch (IOException ex) {
 
                     JOptionPane.showMessageDialog(
                             ManageEmployeesFrame.this,
@@ -655,7 +720,9 @@ public class ManageEmployeesFrame extends JFrame {
         }
     }
 
-    // Back
+
+    // Return to dashboard
+
     private class BackHandler implements ActionListener {
 
         @Override
