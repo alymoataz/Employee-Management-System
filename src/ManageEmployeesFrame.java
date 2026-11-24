@@ -138,7 +138,7 @@ public class ManageEmployeesFrame extends JFrame {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
-            }
+            } //anonymous class that implicitly extends DefaultTableModel
         };
 
         employeeTable = new JTable(tableModel);
