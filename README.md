@@ -2,7 +2,7 @@
 
 Programming II, Fall 2026
 Alexandria University, Faculty of Engineering
-Computer and Communication Engineering, Specialized Scientific Programs
+Computer and Communication Engineering, SSP
 
 ## 1. System Description
 
